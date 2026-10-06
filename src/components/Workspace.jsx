@@ -60,6 +60,8 @@ export default function Workspace({ receipt }) {
   }
 
   const unassignedCount = result.unassigned.items.length;
+  // Summary unlocks only once every item belongs to someone.
+  const readyForSummary = friends.length > 0 && unassignedCount === 0;
   const everyoneOnEverything =
     items.length > 0 && items.every((i) => friends.every((f) => i.assignees.includes(f.id)));
 
@@ -118,10 +120,22 @@ export default function Workspace({ receipt }) {
 
       <TotalsCard result={result} />
 
-      <button type="button" className="primary wide big" onClick={() => setShowSummaryNote(true)}>
+      <button
+        type="button"
+        className="primary wide big"
+        disabled={!readyForSummary}
+        onClick={() => setShowSummaryNote(true)}
+      >
         Generate Summary for Group Chat
       </button>
-      {showSummaryNote && (
+      {!readyForSummary && (
+        <p className="muted small center">
+          {friends.length === 0
+            ? 'Add friends and assign every item to unlock the summary.'
+            : `Assign or split the ${unassignedCount} remaining ${unassignedCount === 1 ? 'item' : 'items'} to unlock the summary.`}
+        </p>
+      )}
+      {readyForSummary && showSummaryNote && (
         <p className="muted small center">The summary screen is the next milestone. Coming soon.</p>
       )}
 

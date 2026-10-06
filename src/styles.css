@@ -563,3 +563,8 @@ button.big {
   font-size: 0.8rem;
   padding: 2px 4px 6px;
 }
+
+button:disabled {
+  opacity: 0.45;
+  cursor: not-allowed;
+}
