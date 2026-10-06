@@ -49,7 +49,19 @@ export default function Workspace({ receipt }) {
 
   const updateItem = (id, patch) => setItems(items.map((i) => (i.id === id ? { ...i, ...patch } : i)));
 
+  // Puts everyone on every item. Leftover cents on each item go to the first friend.
+  function splitWholeBillEvenly() {
+    const alreadyAssigned = items.some((i) => i.assignees.length > 0);
+    if (alreadyAssigned && !window.confirm('Replace all current assignments and split every item among everyone?')) {
+      return;
+    }
+    const everyoneIds = friends.map((f) => f.id);
+    setItems(items.map((i) => ({ ...i, assignees: everyoneIds })));
+  }
+
   const unassignedCount = result.unassigned.items.length;
+  const everyoneOnEverything =
+    items.length > 0 && items.every((i) => friends.every((f) => i.assignees.includes(f.id)));
 
   return (
     <main className="workspace">
@@ -63,6 +75,11 @@ export default function Workspace({ receipt }) {
       <section className="card">
         <h2>Items</h2>
         <p className="muted small">Tap a name or price to edit it.</p>
+        {friends.length >= 2 && !everyoneOnEverything && (
+          <button type="button" className="link-btn" onClick={splitWholeBillEvenly}>
+            Split whole bill evenly
+          </button>
+        )}
 
         {unassignedCount > 0 && (
           <div className="banner warn">

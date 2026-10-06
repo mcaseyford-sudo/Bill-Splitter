@@ -21,6 +21,15 @@ describe('splitItem', () => {
 });
 
 describe('computeSplit', () => {
+  it('splits the whole bill evenly with extra cents to the first friend', () => {
+    const everyone = ['a', 'b', 'c'];
+    const items = [item('pizza', 2000, everyone), item('wings', 1001, everyone)];
+    const result = computeSplit(friends, items, { ...noAdjustments, tax_cents: 250 });
+    expect(result.people.map((p) => p.total_cents)).toEqual([1087, 1082, 1082]);
+    expect(result.unassigned.total_cents).toBe(0);
+    expect(result.billTotal).toBe(3251);
+  });
+
   it('splits the sample receipt exactly', () => {
     const items = [
       item('burger', 1600, ['a']),

@@ -558,3 +558,8 @@ button.big {
     opacity: 0;
   }
 }
+
+.split-evenly-btn {
+  font-size: 0.8rem;
+  padding: 2px 4px 6px;
+}

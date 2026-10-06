@@ -3,8 +3,9 @@ import { centsToInput, formatCents, parseDollarsToCents } from '../lib/money.js'
 import { TapToEdit } from './fields.jsx';
 import { Badge } from './FriendsBar.jsx';
 
-function ItemRow({ item, assignedFriends, onChange, onDelete, onAssign }) {
+function ItemRow({ item, assignedFriends, friendCount, onChange, onDelete, onAssign, onSplitEvenly }) {
   const unassigned = assignedFriends.length === 0;
+  const canSplitEvenly = friendCount >= 2 && assignedFriends.length < friendCount;
 
   return (
     <li className={`item ${unassigned ? 'item-unassigned' : ''}`}>
@@ -28,6 +29,11 @@ function ItemRow({ item, assignedFriends, onChange, onDelete, onAssign }) {
         />
         {item.modifiers.length > 0 && (
           <div className="item-mods">{item.modifiers.map((m) => m.name).join(', ')}</div>
+        )}
+        {canSplitEvenly && (
+          <button type="button" className="link-btn split-evenly-btn" onClick={onSplitEvenly}>
+            Split evenly
+          </button>
         )}
       </div>
       <button type="button" className="assign-btn" onClick={onAssign}>
@@ -78,6 +84,7 @@ function AddItemForm({ onAdd }) {
 }
 
 export default function ItemList({ items, friends, onChange, onDelete, onAssign, onAdd }) {
+  const everyoneIds = friends.map((f) => f.id);
   return (
     <>
       <ul className="item-list">
@@ -86,9 +93,11 @@ export default function ItemList({ items, friends, onChange, onDelete, onAssign,
             key={item.id}
             item={item}
             assignedFriends={friends.filter((f) => item.assignees.includes(f.id))}
+            friendCount={friends.length}
             onChange={(patch) => onChange(item.id, patch)}
             onDelete={() => onDelete(item.id)}
             onAssign={() => onAssign(item.id)}
+            onSplitEvenly={() => onChange(item.id, { assignees: everyoneIds })}
           />
         ))}
       </ul>
